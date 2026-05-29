@@ -363,7 +363,8 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             if (!db) throw new Error("Firebase DB not initialized.");
             
-            await addDoc(collection(db, "ratings"), {
+            await addDoc(collection(db, "questions"), {
+                type: 'rating',
                 author: user.displayName || 'Anonymous',
                 uid: user.uid,
                 ratings: currentRatings,
