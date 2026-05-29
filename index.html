@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDG on Campus - Q&A</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Chrome Dino Splash Screen -->
+    <div id="dinoSplashScreen" class="splash-screen" style="display: none;">
+        <div class="splash-content" style="position: relative; width: 300px; height: 160px; overflow: hidden;">
+
+            <!-- Scrolling Ground -->
+            <div class="dino-ground"></div>
+
+            <!-- Scrolling Cactus -->
+            <div class="dino-cactus">
+                <svg viewBox="0 0 25 50" width="25" height="50">
+                    <path fill="currentColor" d="M10 0h5v15h4v-5h4v15h-4v5h-4v15h-5V30H6v-5H2V10h4v15h4V0z" />
+                </svg>
+            </div>
+
+            <!-- The Dino -->
+            <div id="dinoContainer" class="dino-container">
+                <img src="assets/custom_dino.png" alt="Dino" width="44" height="47" class="dino-img"
+                    style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
+        </div>
+        <div class="splash-text" style="margin-top: 1rem;">Loading...</div>
+    </div>
+
+    <!-- Brand Guideline Background Shapes -->
+    <div class="bg-shape" style="top: 10%; left: 5%; transform: rotate(-10deg);">
+        <svg width="160" height="60" viewBox="0 0 160 60" style="overflow:visible;">
+            <rect x="0" y="0" width="160" height="60" rx="30" fill="#FBBC04" stroke="#111" stroke-width="3" />
+        </svg>
+    </div>
+
+    <div class="bg-shape" style="bottom: 15%; right: 10%; transform: rotate(15deg);">
+        <svg width="90" height="120" viewBox="0 0 90 120" style="overflow:visible;">
+            <polygon points="30,0 55,0 25,120 0,120" fill="#FDE293" stroke="#111" stroke-width="3"
+                stroke-linejoin="round" />
+            <polygon points="75,0 100,0 70,120 45,120" fill="#FDE293" stroke="#111" stroke-width="3"
+                stroke-linejoin="round" />
+        </svg>
+    </div>
+
+    <div class="bg-shape" style="top: 25%; right: 5%; transform: rotate(20deg);">
+        <svg width="60" height="60" viewBox="0 0 60 60" style="overflow:visible;">
+            <line x1="30" y1="0" x2="30" y2="60" stroke="#111" stroke-width="3" stroke-linecap="round" />
+            <line x1="0" y1="30" x2="60" y2="30" stroke="#111" stroke-width="3" stroke-linecap="round" />
+            <line x1="9" y1="9" x2="51" y2="51" stroke="#111" stroke-width="3" stroke-linecap="round" />
+            <line x1="9" y1="51" x2="51" y2="9" stroke="#111" stroke-width="3" stroke-linecap="round" />
+        </svg>
+    </div>
+
+    <div class="bg-shape" style="bottom: 20%; left: 5%; transform: rotate(-5deg);">
+        <svg width="150" height="50" viewBox="0 0 150 50" style="overflow:visible;">
+            <g stroke="#111" stroke-width="5">
+                <circle cx="25" cy="25" r="25" fill="#FBBC04" />
+                <circle cx="75" cy="25" r="25" fill="#FBBC04" />
+                <circle cx="125" cy="25" r="25" fill="#FBBC04" />
+            </g>
+            <g fill="#FBBC04">
+                <circle cx="25" cy="25" r="25" />
+                <circle cx="75" cy="25" r="25" />
+                <circle cx="125" cy="25" r="25" />
+            </g>
+        </svg>
+    </div>
+
+    <!-- Giant Background Text Removed per user request -->
+
+    <!-- Theme Toggle Button -->
+    <button id="themeToggleBtn" class="theme-toggle-btn">Dark</button>
+
+    <header class="app-header">
+        <div class="header-top"
+            style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: start; max-width: 800px; margin: 0 auto 2rem auto; padding: 0 1rem;">
+
+            <!-- Left empty space for grid balance -->
+            <div></div>
+
+            <!-- Centered Logo & Text -->
+            <div class="gdg-logo"
+                style="margin-bottom: 0; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <img src="assets/gdg_logo.png" width="120" height="120" alt="GDG Logo"
+                    style="object-fit: contain; margin-bottom: -16px;">
+                <span style="font-size: 1.25rem; font-weight: 500;">GDG on Campus</span>
+                <div style="color: #FF6D00; font-size: 1rem; font-weight: 600;">Vishwakarma University</div>
+            </div>
+
+            <!-- Right Profile Area -->
+            <div style="display: flex; justify-content: flex-end;">
+                <div id="userProfile" style="display: none; align-items: center; gap: 10px;">
+                    <span id="userNameText" style="font-weight: 500;"></span>
+                    <button id="signOutBtn" class="btn btn-outline" style="padding: 0.5rem 1rem;">Sign Out</button>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="hero-title">Ask/Say Anything</h1>
+        <p class="hero-subtitle">Have a question about tech, our events, or just want to say hi? Drop your question
+            below and we'll answer it!</p>
+    </header>
+
+    <main class="container">
+        <div id="authContainer" class="card animate-slide-up" style="text-align: center; margin-bottom: 2rem;">
+            <div class="card-content">
+                <h2 class="card-title" style="margin-bottom: 1rem;">Sign in to Ask</h2>
+                <p style="color: var(--md-sys-color-on-surface-variant); margin-bottom: 1.5rem;">You need to be signed
+                    in with your Google account to submit a question.</p>
+            </div>
+            <button id="signInBtn" class="btn btn-primary card-bottom-btn">
+                <span style="display: flex; align-items: center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        style="margin-right: 12px; background: white; border-radius: 50%; padding: 2px;">
+                        <path
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                            fill="#4285F4" />
+                        <path
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                            fill="#34A853" />
+                        <path
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                            fill="#FBBC05" />
+                        <path
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                            fill="#EA4335" />
+                    </svg>
+                    Sign in with Google
+                </span>
+                <span style="font-size: 1.5rem;">&rarr;</span>
+            </button>
+        </div>
+
+        <div id="formContainer" class="card animate-slide-up" style="display: none;">
+            <div class="card-content">
+                <h2 class="card-title">What you feelin?</h2>
+
+                <form id="questionForm">
+                    <div class="form-group">
+                        <label for="authorName" class="form-label">Your Name</label>
+                        <input type="text" id="authorName" class="form-input" disabled>
+                    </div>
+
+                    <div class="form-group speech-bubble-container" style="position: relative;">
+                        <textarea id="questionText" class="form-textarea speech-bubble" placeholder=""
+                            required></textarea>
+                        <!-- Rocket Image for Send Animation -->
+                        <img src="assets/rocket.png" id="rocketIcon" alt="Rocket"
+                            style="display: none; position: absolute; width: 60px; height: 60px; z-index: 10;">
+                    </div>
+                </form>
+            </div>
+            <button type="submit" form="questionForm" class="btn btn-primary card-bottom-btn" id="submitBtn">
+                <span>Submit Question</span>
+                <span style="font-size: 1.5rem;">&rarr;</span>
+            </button>
+        </div>
+
+        <!-- Mood Game Container (Hidden initially) -->
+        <div id="moodGameContainer" class="card animate-slide-up" style="display: none; text-align: center; overflow: hidden; position: relative; min-height: 350px;">
+            <div id="moodGameUI" class="card-content" style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                <h2 class="card-title">Question sent! 🚀</h2>
+                <p style="color: var(--md-sys-color-on-surface-variant); margin-bottom: 2rem;">Catch a floating bubble that matches your mood to get a personalized recommendation!</p>
+                
+                <div class="mood-orbs-container" id="moodOrbsContainer">
+                    <button class="mood-orb sad" data-mood="sad">🌧️</button>
+                    <button class="mood-orb chill" data-mood="chill">😌</button>
+                    <button class="mood-orb energetic" data-mood="energetic">⚡️</button>
+                    <button class="mood-orb focused" data-mood="focused">🎧</button>
+                </div>
+            </div>
+
+            <div id="recommendationUI" class="card-content" style="display: none; height: 100%; flex-direction: column; justify-content: center; align-items: center;">
+                <h2 class="card-title">Your Vibe Match</h2>
+                <div id="recCard" class="rec-card" style="margin-top: 1.5rem;">
+                    <!-- Data injected via JS -->
+                </div>
+                <button id="playAgainBtn" class="btn btn-outline btn-pill" style="margin-top: 2rem;">Ask Another Question</button>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="admin.html" class="btn btn-outline btn-pill" style="font-size: 0.875rem;">GDG Team? Go to Admin
+                Dashboard</a>
+        </div>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>

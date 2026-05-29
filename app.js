@@ -1,0 +1,316 @@
+import { db, auth } from './firebase-config.js';
+import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
+// --- Theme Toggle Logic ---
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+const currentTheme = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', currentTheme);
+if(themeToggleBtn) {
+    themeToggleBtn.textContent = currentTheme === 'dark' ? 'Light' : 'Dark';
+    themeToggleBtn.addEventListener('click', () => {
+        let theme = document.documentElement.getAttribute('data-theme');
+        theme = (theme === 'dark') ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        themeToggleBtn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+    });
+}
+
+// --- Splash Screen Logic ---
+const splashScreen = document.getElementById('dinoSplashScreen');
+if (splashScreen) {
+    if (!sessionStorage.getItem('splashPlayed')) {
+        splashScreen.style.display = 'flex';
+        
+        setTimeout(() => {
+            splashScreen.classList.add('jumping');
+            
+            setTimeout(() => {
+                splashScreen.classList.add('hidden');
+                sessionStorage.setItem('splashPlayed', 'true');
+                
+                setTimeout(() => {
+                    splashScreen.remove();
+                }, 500);
+            }, 600);
+        }, 1800);
+    } else {
+        splashScreen.remove();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('questionForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const questionInput = document.getElementById('questionText');
+    const authorNameInput = document.getElementById('authorName');
+
+    // --- Interactive Q&A Input Features ---
+
+    // 1. Auto-resize Textarea
+    if (questionInput) {
+        questionInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // 2. Typewriter Placeholder Effect
+        const prompts = [
+            "What's the best way to start Web Dev?",
+            "Any tips for the upcoming hackathon?",
+            "What's your favorite coding snack?",
+            "Just dropping by to say hi! 👋",
+            "How do I center a div? 😭",
+            "Tabs or spaces? Let's settle this."
+        ];
+        let promptIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typeDelay = 100;
+        
+        function typeWriter() {
+            if (document.activeElement === questionInput && questionInput.value.length > 0) {
+                // Pause effect if user is actively typing
+                setTimeout(typeWriter, 1000);
+                return;
+            }
+
+            const currentPrompt = prompts[promptIndex];
+            
+            if (isDeleting) {
+                questionInput.setAttribute('placeholder', currentPrompt.substring(0, charIndex - 1));
+                charIndex--;
+                typeDelay = 30; // Delete faster
+            } else {
+                questionInput.setAttribute('placeholder', currentPrompt.substring(0, charIndex + 1));
+                charIndex++;
+                typeDelay = 80; // Type speed
+            }
+            
+            if (!isDeleting && charIndex === currentPrompt.length) {
+                typeDelay = 2500; // Pause at the end before deleting
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                promptIndex = (promptIndex + 1) % prompts.length;
+                typeDelay = 500; // Pause before typing next prompt
+            }
+            
+            setTimeout(typeWriter, typeDelay);
+        }
+        
+        // Start typing effect slightly after load
+        setTimeout(typeWriter, 1500);
+    }
+    
+    // Auth UI elements
+    const authContainer = document.getElementById('authContainer');
+    const formContainer = document.getElementById('formContainer');
+    const signInBtn = document.getElementById('signInBtn');
+    const signOutBtn = document.getElementById('signOutBtn');
+    const userProfile = document.getElementById('userProfile');
+    const userNameText = document.getElementById('userNameText');
+
+    let currentUser = null;
+
+    // Listen for Auth State Changes
+    if (auth) {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                authContainer.style.display = 'none';
+                formContainer.style.display = 'block';
+                userProfile.style.display = 'flex';
+                userNameText.textContent = user.displayName;
+                authorNameInput.value = user.displayName; // Pre-fill name
+                authorNameInput.disabled = true; // Lock it to their authenticated name
+            } else {
+                currentUser = null;
+                authContainer.style.display = 'block';
+                formContainer.style.display = 'none';
+                userProfile.style.display = 'none';
+                userNameText.textContent = '';
+                authorNameInput.value = '';
+                authorNameInput.disabled = false;
+            }
+        });
+    }
+
+    // Sign In Logic
+    signInBtn?.addEventListener('click', async () => {
+        if (!auth) return showToast("Auth not initialized. Check config.", "error");
+        const provider = new GoogleAuthProvider();
+        try {
+            await signInWithPopup(auth, provider);
+            // onAuthStateChanged will handle the UI update
+        } catch (error) {
+            console.error("Sign in error:", error);
+            showToast("Failed to sign in.", "error");
+        }
+    });
+
+    // Sign Out Logic
+    signOutBtn?.addEventListener('click', async () => {
+        try {
+            await signOut(auth);
+            showToast("Signed out successfully", "success");
+        } catch (error) {
+            console.error("Sign out error:", error);
+        }
+    });
+
+    // Form Submission
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!currentUser) {
+            showToast("You must be signed in to submit a question.", "error");
+            return;
+        }
+
+        const questionText = questionInput.value.trim();
+        if (!questionText) return;
+        
+        const authorName = currentUser.displayName || 'Anonymous User';
+        const uid = currentUser.uid;
+        
+        submitBtn.disabled = true;
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.innerHTML = 'Submitting...';
+
+        try {
+            if (!db) throw new Error("Firebase DB not initialized.");
+
+            await addDoc(collection(db, "questions"), {
+                author: authorName,
+                uid: uid,
+                text: questionText,
+                status: 'pending',
+                timestamp: serverTimestamp()
+            });
+
+            // Trigger Rocket Animation
+            const rocket = document.getElementById('rocketIcon');
+            const formContainerInner = document.querySelector('#formContainer .card-content');
+            
+            if (rocket && formContainerInner) {
+                // Shrink the form slightly
+                formContainerInner.classList.add('form-shrinking');
+                
+                // Launch rocket
+                rocket.classList.add('rocket-launching');
+                
+                // Reset after animation and SHOW MOOD GAME
+                setTimeout(() => {
+                    rocket.classList.remove('rocket-launching');
+                    formContainerInner.classList.remove('form-shrinking');
+                    questionInput.value = '';
+                    questionInput.style.height = 'auto'; // Reset auto-resize height
+                    
+                    // Show Mood Game
+                    document.getElementById('formContainer').style.display = 'none';
+                    document.getElementById('moodGameContainer').style.display = 'block';
+                    document.getElementById('moodGameUI').style.display = 'flex';
+                    document.getElementById('recommendationUI').style.display = 'none';
+
+                }, 1000);
+            } else {
+                questionInput.value = ''; 
+                questionInput.style.height = 'auto';
+                document.getElementById('formContainer').style.display = 'none';
+                document.getElementById('moodGameContainer').style.display = 'block';
+                document.getElementById('moodGameUI').style.display = 'flex';
+                document.getElementById('recommendationUI').style.display = 'none';
+            }
+            
+        } catch (error) {
+            console.error("Error adding document: ", error);
+            showToast("Failed to submit question.", "error");
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
+    });
+});
+
+function showToast(message, type) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    
+    if (type === 'error') {
+        toast.style.backgroundColor = 'var(--md-sys-color-error)';
+    } else if (type === 'success') {
+        toast.style.backgroundColor = 'var(--md-sys-color-secondary)';
+    }
+
+    container.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// --- Mood Game Logic ---
+document.addEventListener('DOMContentLoaded', () => {
+    const moodOrbs = document.querySelectorAll('.mood-orb');
+    const moodGameUI = document.getElementById('moodGameUI');
+    const recommendationUI = document.getElementById('recommendationUI');
+    const recCard = document.getElementById('recCard');
+    const playAgainBtn = document.getElementById('playAgainBtn');
+
+    // Dataset based on user requirements
+    const recommendations = {
+        sad: [
+            { title: "No Surprises", artist: "Radiohead", type: "Song" },
+            { title: "Glimpse of Us", artist: "Joji", type: "Song" },
+            { title: "Amnesia", artist: "5SOS", type: "Song" },
+            { title: "Interstellar", artist: "Movie", type: "Movie" }
+        ],
+        chill: [
+            { title: "Sweater Weather", artist: "The Neighbourhood", type: "Song" },
+            { title: "Gravity", artist: "John Mayer", type: "Song" },
+            { title: "RUNAWAY", artist: "Dutch Melrose", type: "Song" },
+            { title: "Spirited Away", artist: "Movie", type: "Movie" }
+        ],
+        energetic: [
+            { title: "Dynamite", artist: "BTS", type: "Song" },
+            { title: "A Sky Full of Stars", artist: "Coldplay", type: "Song" },
+            { title: "Youngblood", artist: "5SOS", type: "Song" },
+            { title: "Spider-Man: Into the Spider-Verse", artist: "Movie", type: "Movie" }
+        ],
+        focused: [
+            { title: "Everything In Its Right Place", artist: "Radiohead", type: "Song" },
+            { title: "Slow Dancing in a Burning Room", artist: "John Mayer", type: "Song" },
+            { title: "The Social Network", artist: "Movie", type: "Movie" },
+            { title: "Mr. Robot", artist: "Series", type: "Series" }
+        ]
+    };
+
+    moodOrbs.forEach(orb => {
+        orb.addEventListener('click', () => {
+            const mood = orb.getAttribute('data-mood');
+            const recs = recommendations[mood];
+            const randomRec = recs[Math.floor(Math.random() * recs.length)];
+
+            // Update Card UI
+            recCard.innerHTML = `
+                <span class="rec-type">${randomRec.type}</span>
+                <div class="rec-title">${randomRec.title}</div>
+                <div class="rec-artist">${randomRec.artist}</div>
+            `;
+
+            // Transition UI
+            moodGameUI.style.display = 'none';
+            recommendationUI.style.display = 'flex';
+        });
+    });
+
+    playAgainBtn?.addEventListener('click', () => {
+        document.getElementById('moodGameContainer').style.display = 'none';
+        document.getElementById('formContainer').style.display = 'block';
+    });
+});
