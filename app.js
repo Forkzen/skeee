@@ -319,8 +319,79 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // --- Interactive Rating Logic ---
+    const ratingEmojis = document.querySelectorAll('.rating-emoji');
+    const submitRatingBtn = document.getElementById('submitRatingBtn');
+    const ratingSection = document.getElementById('ratingSection');
+    const thankYouMessage = document.getElementById('thankYouMessage');
+    
+    let currentRatings = {};
+
+    ratingEmojis.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const category = btn.closest('.rating-row').getAttribute('data-category');
+            const val = btn.getAttribute('data-val');
+            
+            // Remove active class from all siblings
+            const siblings = btn.closest('.rating-options').querySelectorAll('.rating-emoji');
+            siblings.forEach(s => s.classList.remove('active', 'pop'));
+            
+            // Add active and pop to clicked
+            btn.classList.add('active', 'pop');
+            
+            currentRatings[category] = parseInt(val);
+            
+            // Check if all 4 are rated
+            if (Object.keys(currentRatings).length === 4) {
+                submitRatingBtn.style.display = 'inline-flex';
+                // Small animation for button
+                submitRatingBtn.style.animation = 'slideUp 0.3s ease-out forwards';
+            }
+        });
+    });
+
+    submitRatingBtn?.addEventListener('click', async () => {
+        const user = auth.currentUser;
+        if (!user) {
+            showToast("You must be signed in to rate.", "error");
+            return;
+        }
+
+        submitRatingBtn.disabled = true;
+        submitRatingBtn.innerHTML = 'Submitting...';
+
+        try {
+            if (!db) throw new Error("Firebase DB not initialized.");
+            
+            await addDoc(collection(db, "ratings"), {
+                author: user.displayName || 'Anonymous',
+                uid: user.uid,
+                ratings: currentRatings,
+                timestamp: serverTimestamp()
+            });
+            
+            ratingSection.style.display = 'none';
+            thankYouMessage.style.display = 'block';
+            showToast("Rating submitted successfully!", "success");
+        } catch (error) {
+            console.error("Error adding rating: ", error);
+            showToast("Failed to submit rating.", "error");
+            submitRatingBtn.disabled = false;
+            submitRatingBtn.innerHTML = 'Submit Rating &rarr;';
+        }
+    });
+
     playAgainBtn?.addEventListener('click', () => {
         document.getElementById('moodGameContainer').style.display = 'none';
         document.getElementById('formContainer').style.display = 'block';
+        
+        // Reset Rating UI
+        currentRatings = {};
+        ratingEmojis.forEach(btn => btn.classList.remove('active', 'pop'));
+        submitRatingBtn.style.display = 'none';
+        submitRatingBtn.disabled = false;
+        submitRatingBtn.innerHTML = 'Submit Rating &rarr;';
+        ratingSection.style.display = 'flex';
+        thankYouMessage.style.display = 'none';
     });
 });

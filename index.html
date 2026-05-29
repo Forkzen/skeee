@@ -186,6 +186,64 @@
                 <div id="recCard" class="rec-card" style="margin-top: 1.5rem;">
                     <!-- Data injected via JS -->
                 </div>
+
+                <!-- Interactive Rating UI -->
+                <div id="ratingSection" class="rating-section animate-slide-up" style="margin-top: 2.5rem; width: 100%; display: flex; flex-direction: column; gap: 1.5rem;">
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--md-sys-color-on-surface); text-align: left; margin-bottom: 0.5rem;">Rate your GDG Experience! 🌟</h3>
+                    
+                    <div class="rating-row" data-category="workshops">
+                        <div class="rating-label">Workshops & Events 🎤</div>
+                        <div class="rating-options">
+                            <button class="rating-emoji" data-val="1">🥱</button>
+                            <button class="rating-emoji" data-val="2">🤔</button>
+                            <button class="rating-emoji" data-val="3">🙂</button>
+                            <button class="rating-emoji" data-val="4">🤩</button>
+                            <button class="rating-emoji" data-val="5">🤯</button>
+                        </div>
+                    </div>
+
+                    <div class="rating-row" data-category="speakers">
+                        <div class="rating-label">Speaker Quality 🗣️</div>
+                        <div class="rating-options">
+                            <button class="rating-emoji" data-val="1">🥱</button>
+                            <button class="rating-emoji" data-val="2">🤔</button>
+                            <button class="rating-emoji" data-val="3">🙂</button>
+                            <button class="rating-emoji" data-val="4">🤩</button>
+                            <button class="rating-emoji" data-val="5">🤯</button>
+                        </div>
+                    </div>
+
+                    <div class="rating-row" data-category="swags">
+                        <div class="rating-label">Free Swags & Goodies 🎁</div>
+                        <div class="rating-options">
+                            <button class="rating-emoji" data-val="1">😭</button>
+                            <button class="rating-emoji" data-val="2">🥲</button>
+                            <button class="rating-emoji" data-val="3">🙂</button>
+                            <button class="rating-emoji" data-val="4">😍</button>
+                            <button class="rating-emoji" data-val="5">🤑</button>
+                        </div>
+                    </div>
+
+                    <div class="rating-row" data-category="overall">
+                        <div class="rating-label">Overall Vibe ✨</div>
+                        <div class="rating-options">
+                            <button class="rating-emoji" data-val="1">📉</button>
+                            <button class="rating-emoji" data-val="2">😐</button>
+                            <button class="rating-emoji" data-val="3">📈</button>
+                            <button class="rating-emoji" data-val="4">🔥</button>
+                            <button class="rating-emoji" data-val="5">🚀</button>
+                        </div>
+                    </div>
+
+                    <button id="submitRatingBtn" class="btn btn-primary btn-pill" style="margin-top: 1rem; display: none; align-self: center;">
+                        Submit Rating &rarr;
+                    </button>
+                </div>
+
+                <div id="thankYouMessage" class="animate-slide-up" style="display: none; margin-top: 2.5rem; text-align: center; color: var(--google-green); font-weight: 600; font-size: 1.25rem;">
+                    Thanks for your feedback! 💖
+                </div>
+
                 <button id="playAgainBtn" class="btn btn-outline btn-pill" style="margin-top: 2rem;">Ask Another
                     Question</button>
             </div>
