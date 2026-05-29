@@ -190,6 +190,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 userNameText.textContent = user.displayName;
                 authorNameInput.value = user.displayName; // Pre-fill name
                 authorNameInput.disabled = true; // Lock it to their authenticated name
+                
+                const leaderboardContainer = document.getElementById('leaderboardContainer');
+                if (leaderboardContainer) leaderboardContainer.style.display = 'block';
 
                 // Listen to user score for badge
                 if (userUnsubscribe) userUnsubscribe();
@@ -212,6 +215,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 userNameText.textContent = '';
                 authorNameInput.value = '';
                 authorNameInput.disabled = false;
+                
+                const leaderboardContainer = document.getElementById('leaderboardContainer');
+                if (leaderboardContainer) leaderboardContainer.style.display = 'none';
             }
         });
     }
