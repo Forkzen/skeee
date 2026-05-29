@@ -89,6 +89,15 @@ body {
   z-index: 2;
 }
 
+.header-top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  max-width: 800px;
+  margin: 0 auto 2rem auto;
+  padding: 0 1rem;
+}
+
 .gdg-logo {
   display: flex;
   align-items: center;
@@ -857,6 +866,60 @@ body {
 }
 
 @media (max-width: 600px) {
+  .header-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .header-top > div {
+    display: flex;
+    justify-content: center !important;
+  }
+  .theme-toggle-btn {
+    position: static;
+    margin-bottom: 1rem;
+  }
+  .app-header {
+    padding: 1rem;
+  }
+  .hero-title {
+    font-size: 2rem;
+  }
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  .card-content {
+    padding: 1.5rem 1rem;
+  }
+  .btn {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+  }
+  .card-bottom-btn {
+    padding: 1rem 1.5rem;
+  }
+  .speech-bubble {
+    font-size: 1rem;
+  }
+  .mood-orb {
+    width: 45px;
+    height: 45px;
+    font-size: 1.25rem;
+  }
+  .rating-options {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+  .rating-emoji {
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+  }
+  .bg-shape {
+    transform: scale(0.6) !important;
+  }
   .analytics-grid {
     grid-template-columns: 1fr;
   }
