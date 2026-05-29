@@ -6,7 +6,7 @@ import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from
 const themeToggleBtn = document.getElementById('themeToggleBtn');
 const currentTheme = localStorage.getItem('theme') || 'light';
 document.documentElement.setAttribute('data-theme', currentTheme);
-if(themeToggleBtn) {
+if (themeToggleBtn) {
     themeToggleBtn.textContent = currentTheme === 'dark' ? 'Light' : 'Dark';
     themeToggleBtn.addEventListener('click', () => {
         let theme = document.documentElement.getAttribute('data-theme');
@@ -22,14 +22,14 @@ const splashScreen = document.getElementById('dinoSplashScreen');
 if (splashScreen) {
     if (!sessionStorage.getItem('splashPlayed')) {
         splashScreen.style.display = 'flex';
-        
+
         setTimeout(() => {
             splashScreen.classList.add('jumping');
-            
+
             setTimeout(() => {
                 splashScreen.classList.add('hidden');
                 sessionStorage.setItem('splashPlayed', 'true');
-                
+
                 setTimeout(() => {
                     splashScreen.remove();
                 }, 500);
@@ -72,12 +72,12 @@ document.addEventListener('DOMContentLoaded', () => {
     flipToLeaderboardBtnTop?.addEventListener('click', () => {
         // Toggle flip state
         flipCard?.classList.toggle('is-flipped');
-        
+
         // Update top button text depending on state
         if (flipCard?.classList.contains('is-flipped')) {
             flipToLeaderboardBtnTop.innerHTML = '&larr; Ask Question';
         } else {
-            flipToLeaderboardBtnTop.innerHTML = '🏆 Leaderboard';
+            flipToLeaderboardBtnTop.innerHTML = 'Leaderboard';
         }
     });
 
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 sortedUsers.forEach((data) => {
                     const count = data.count;
                     const rank = getRankInfo(count);
-                    
+
                     const item = document.createElement('div');
                     item.className = 'leaderboard-item';
                     item.innerHTML = `
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Auto-resize Textarea
     if (questionInput) {
-        questionInput.addEventListener('input', function() {
+        questionInput.addEventListener('input', function () {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
         });
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let charIndex = 0;
         let isDeleting = false;
         let typeDelay = 100;
-        
+
         function typeWriter() {
             if (document.activeElement === questionInput && questionInput.value.length > 0) {
                 // Pause effect if user is actively typing
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const currentPrompt = prompts[promptIndex];
-            
+
             if (isDeleting) {
                 questionInput.setAttribute('placeholder', currentPrompt.substring(0, charIndex - 1));
                 charIndex--;
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 charIndex++;
                 typeDelay = 80; // Type speed
             }
-            
+
             if (!isDeleting && charIndex === currentPrompt.length) {
                 typeDelay = 2500; // Pause at the end before deleting
                 isDeleting = true;
@@ -218,14 +218,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 promptIndex = (promptIndex + 1) % prompts.length;
                 typeDelay = 500; // Pause before typing next prompt
             }
-            
+
             setTimeout(typeWriter, typeDelay);
         }
-        
+
         // Start typing effect slightly after load
         setTimeout(typeWriter, 1500);
     }
-    
+
     // Auth UI elements
     const authContainer = document.getElementById('authContainer');
     const formContainer = document.getElementById('formContainer');
@@ -243,15 +243,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (user) {
                 currentUser = user;
                 authContainer.style.display = 'none';
-                
+
                 const interactiveArea = document.getElementById('interactiveArea');
                 if (interactiveArea) interactiveArea.style.display = 'block';
-                
+
                 const topLeaderboardBtn = document.getElementById('flipToLeaderboardBtnTop');
                 if (topLeaderboardBtn) topLeaderboardBtn.style.display = 'block';
-                
+
                 formContainer.style.display = 'flex';
-                
+
                 userProfile.style.display = 'flex';
                 userNameText.textContent = user.displayName;
                 authorNameInput.value = user.displayName; // Pre-fill name
@@ -269,13 +269,13 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 currentUser = null;
                 authContainer.style.display = 'block';
-                
+
                 const interactiveArea = document.getElementById('interactiveArea');
                 if (interactiveArea) interactiveArea.style.display = 'none';
-                
+
                 const topLeaderboardBtn = document.getElementById('flipToLeaderboardBtnTop');
                 if (topLeaderboardBtn) topLeaderboardBtn.style.display = 'none';
-                
+
                 formContainer.style.display = 'none';
                 userProfile.style.display = 'none';
                 userNameText.textContent = '';
@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Form Submission
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         if (!currentUser) {
             showToast("You must be signed in to submit a question.", "error");
             return;
@@ -319,10 +319,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const questionText = questionInput.value.trim();
         if (!questionText) return;
-        
+
         const authorName = currentUser.displayName || 'Anonymous User';
         const uid = currentUser.uid;
-        
+
         submitBtn.disabled = true;
         const originalBtnText = submitBtn.innerHTML;
         submitBtn.innerHTML = 'Submitting...';
@@ -341,21 +341,21 @@ document.addEventListener('DOMContentLoaded', () => {
             // Trigger Rocket Animation
             const rocket = document.getElementById('rocketIcon');
             const formContainerInner = document.querySelector('#formContainer .card-content');
-            
+
             if (rocket && formContainerInner) {
                 // Shrink the form slightly
                 formContainerInner.classList.add('form-shrinking');
-                
+
                 // Launch rocket
                 rocket.classList.add('rocket-launching');
-                
+
                 // Reset after animation and SHOW MOOD GAME
                 setTimeout(() => {
                     rocket.classList.remove('rocket-launching');
                     formContainerInner.classList.remove('form-shrinking');
                     questionInput.value = '';
                     questionInput.style.height = 'auto'; // Reset auto-resize height
-                    
+
                     // Show Mood Game
                     document.getElementById('formContainer').style.display = 'none';
                     document.getElementById('moodGameContainer').style.display = 'block';
@@ -364,14 +364,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 }, 1000);
             } else {
-                questionInput.value = ''; 
+                questionInput.value = '';
                 questionInput.style.height = 'auto';
                 document.getElementById('formContainer').style.display = 'none';
                 document.getElementById('moodGameContainer').style.display = 'block';
                 document.getElementById('moodGameUI').style.display = 'flex';
                 document.getElementById('recommendationUI').style.display = 'none';
             }
-            
+
         } catch (error) {
             console.error("Error adding document: ", error);
             showToast("Failed to submit question.", "error");
@@ -387,7 +387,7 @@ function showToast(message, type) {
     const toast = document.createElement('div');
     toast.className = 'toast';
     toast.textContent = message;
-    
+
     if (type === 'error') {
         toast.style.backgroundColor = 'var(--md-sys-color-error)';
     } else if (type === 'success') {
@@ -472,23 +472,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitRatingBtn = document.getElementById('submitRatingBtn');
     const ratingSection = document.getElementById('ratingSection');
     const thankYouMessage = document.getElementById('thankYouMessage');
-    
+
     let currentRatings = {};
 
     ratingEmojis.forEach(btn => {
         btn.addEventListener('click', () => {
             const category = btn.closest('.rating-row').getAttribute('data-category');
             const val = btn.getAttribute('data-val');
-            
+
             // Remove active class from all siblings
             const siblings = btn.closest('.rating-options').querySelectorAll('.rating-emoji');
             siblings.forEach(s => s.classList.remove('active', 'pop'));
-            
+
             // Add active and pop to clicked
             btn.classList.add('active', 'pop');
-            
+
             currentRatings[category] = parseInt(val);
-            
+
             // Check if all 4 are rated
             if (Object.keys(currentRatings).length === 4) {
                 submitRatingBtn.disabled = false;
@@ -510,7 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             if (!db) throw new Error("Firebase DB not initialized.");
-            
+
             await addDoc(collection(db, "questions"), {
                 type: 'rating',
                 author: user.displayName || 'Anonymous',
@@ -518,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ratings: currentRatings,
                 timestamp: serverTimestamp()
             });
-            
+
             ratingSection.style.display = 'none';
             thankYouMessage.style.display = 'block';
             showToast("Rating submitted successfully!", "success");
@@ -533,7 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
     playAgainBtn?.addEventListener('click', () => {
         document.getElementById('moodGameContainer').style.display = 'none';
         document.getElementById('formContainer').style.display = 'block';
-        
+
         // Reset Rating UI
         currentRatings = {};
         ratingEmojis.forEach(btn => btn.classList.remove('active', 'pop'));
