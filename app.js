@@ -54,18 +54,7 @@ function getRankInfo(count) {
     return { name: 'Top 250', class: 'rank-top250', emoji: '👑' };
 }
 
-async function updateUserScore(user) {
-    if (!user) return;
-    try {
-        const userRef = doc(db, 'users', user.uid);
-        await setDoc(userRef, {
-            displayName: user.displayName || 'Anonymous User',
-            submissionCount: increment(1)
-        }, { merge: true });
-    } catch (e) {
-        console.error("Error updating score:", e);
-    }
-}
+let globalUserCounts = {};
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('questionForm');
@@ -73,37 +62,66 @@ document.addEventListener('DOMContentLoaded', () => {
     const questionInput = document.getElementById('questionText');
     const authorNameInput = document.getElementById('authorName');
 
-    // --- Leaderboard Listener ---
+    // --- Leaderboard Listener (Aggregating from 'questions') ---
     const leaderboardList = document.getElementById('leaderboardList');
     if (leaderboardList && db) {
-        const q = query(collection(db, 'users'), orderBy('submissionCount', 'desc'), limit(10));
+        const q = query(collection(db, 'questions'));
         onSnapshot(q, (snapshot) => {
-            leaderboardList.innerHTML = '';
-            if (snapshot.empty) {
-                leaderboardList.innerHTML = '<div class="empty-state" style="padding: 2rem 1rem;"><p>No contributors yet. Be the first!</p></div>';
-                return;
-            }
-            let pos = 1;
+            const userCounts = {};
             snapshot.forEach((docSnap) => {
                 const data = docSnap.data();
-                const count = data.submissionCount || 0;
-                const rank = getRankInfo(count);
-                
-                const item = document.createElement('div');
-                item.className = 'leaderboard-item';
-                item.innerHTML = `
-                    <div class="leaderboard-user">
-                        <span class="leaderboard-pos">#${pos}</span>
-                        <div>
-                            <div class="leaderboard-name">${data.displayName || 'Anonymous User'}</div>
-                            <span class="rank-badge ${rank.class}" style="font-size: 0.65rem; padding: 0.1rem 0.3rem; margin-top: 2px;">${rank.emoji} ${rank.name}</span>
-                        </div>
-                    </div>
-                    <div class="leaderboard-score">${count}</div>
-                `;
-                leaderboardList.appendChild(item);
-                pos++;
+                if (data.uid) {
+                    if (!userCounts[data.uid]) {
+                        userCounts[data.uid] = {
+                            count: 0,
+                            displayName: data.author || 'Anonymous User'
+                        };
+                    }
+                    userCounts[data.uid].count++;
+                }
             });
+            globalUserCounts = userCounts;
+
+            // Render Leaderboard
+            const sortedUsers = Object.values(userCounts).sort((a, b) => b.count - a.count).slice(0, 10);
+            leaderboardList.innerHTML = '';
+
+            if (sortedUsers.length === 0) {
+                leaderboardList.innerHTML = '<div class="empty-state" style="padding: 2rem 1rem;"><p>No contributors yet. Be the first!</p></div>';
+            } else {
+                let pos = 1;
+                sortedUsers.forEach((data) => {
+                    const count = data.count;
+                    const rank = getRankInfo(count);
+                    
+                    const item = document.createElement('div');
+                    item.className = 'leaderboard-item';
+                    item.innerHTML = `
+                        <div class="leaderboard-user">
+                            <span class="leaderboard-pos">#${pos}</span>
+                            <div>
+                                <div class="leaderboard-name">${data.displayName}</div>
+                                <span class="rank-badge ${rank.class}" style="font-size: 0.65rem; padding: 0.1rem 0.3rem; margin-top: 2px;">${rank.emoji} ${rank.name}</span>
+                            </div>
+                        </div>
+                        <div class="leaderboard-score">${count}</div>
+                    `;
+                    leaderboardList.appendChild(item);
+                    pos++;
+                });
+            }
+
+            // Update logged in user badge if they are signed in
+            if (currentUser) {
+                const badge = document.getElementById('userRankBadge');
+                if (badge) {
+                    const count = globalUserCounts[currentUser.uid] ? globalUserCounts[currentUser.uid].count : 0;
+                    const rank = getRankInfo(count);
+                    badge.textContent = `${rank.emoji} ${rank.name}`;
+                    badge.className = `rank-badge ${rank.class}`;
+                    badge.style.display = 'inline-block';
+                }
+            }
         }, (error) => {
             console.error("Leaderboard error:", error);
             leaderboardList.innerHTML = '<div class="empty-state"><p>Could not load leaderboard.</p></div>';
@@ -194,21 +212,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const leaderboardContainer = document.getElementById('leaderboardContainer');
                 if (leaderboardContainer) leaderboardContainer.style.display = 'block';
 
-                // Listen to user score for badge
-                if (userUnsubscribe) userUnsubscribe();
-                userUnsubscribe = onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
-                    const badge = document.getElementById('userRankBadge');
-                    if (badge) {
-                        const count = docSnap.exists() ? (docSnap.data().submissionCount || 0) : 0;
-                        const rank = getRankInfo(count);
-                        badge.textContent = `${rank.emoji} ${rank.name}`;
-                        badge.className = `rank-badge ${rank.class}`;
-                        badge.style.display = 'inline-block';
-                    }
-                });
+                // Listen to user score for badge (Now handled inside leaderboard listener)
+                const badge = document.getElementById('userRankBadge');
+                if (badge) {
+                    const count = globalUserCounts[currentUser.uid] ? globalUserCounts[currentUser.uid].count : 0;
+                    const rank = getRankInfo(count);
+                    badge.textContent = `${rank.emoji} ${rank.name}`;
+                    badge.className = `rank-badge ${rank.class}`;
+                    badge.style.display = 'inline-block';
+                }
             } else {
                 currentUser = null;
-                if (userUnsubscribe) { userUnsubscribe(); userUnsubscribe = null; }
                 authContainer.style.display = 'block';
                 formContainer.style.display = 'none';
                 userProfile.style.display = 'none';
@@ -274,9 +288,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 status: 'pending',
                 timestamp: serverTimestamp()
             });
-
-            // Update user submission score
-            await updateUserScore(currentUser);
 
             // Trigger Rocket Animation
             const rocket = document.getElementById('rocketIcon');
@@ -458,9 +469,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 ratings: currentRatings,
                 timestamp: serverTimestamp()
             });
-            
-            // Update user submission score
-            await updateUserScore(user);
             
             ratingSection.style.display = 'none';
             thankYouMessage.style.display = 'block';
