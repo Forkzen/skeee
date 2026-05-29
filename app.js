@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // We should also update the top button text when the inside-card buttons are clicked
     const resetTopBtnTextToLeaderboard = () => {
-        if (flipToLeaderboardBtnTop) flipToLeaderboardBtnTop.innerHTML = '🏆 Leaderboard';
+        if (flipToLeaderboardBtnTop) flipToLeaderboardBtnTop.innerHTML = 'Leaderboard';
     };
     const resetTopBtnTextToQuestions = () => {
         if (flipToLeaderboardBtnTop) flipToLeaderboardBtnTop.innerHTML = '&larr; Ask Question';
