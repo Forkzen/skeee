@@ -64,14 +64,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Flip Card Listeners ---
     const flipCard = document.getElementById('flipCard');
+    document.getElementById('flipToFrontBtn')?.addEventListener('click', () => {
+        flipCard?.classList.remove('is-flipped');
+    });
+
+    const flipToLeaderboardBtnTop = document.getElementById('flipToLeaderboardBtnTop');
+    flipToLeaderboardBtnTop?.addEventListener('click', () => {
+        // Toggle flip state
+        flipCard?.classList.toggle('is-flipped');
+        
+        // Update top button text depending on state
+        if (flipCard?.classList.contains('is-flipped')) {
+            flipToLeaderboardBtnTop.innerHTML = '&larr; Ask Question';
+        } else {
+            flipToLeaderboardBtnTop.innerHTML = '🏆 Leaderboard';
+        }
+    });
+
+    // We should also update the top button text when the inside-card buttons are clicked
+    const resetTopBtnTextToLeaderboard = () => {
+        if (flipToLeaderboardBtnTop) flipToLeaderboardBtnTop.innerHTML = '🏆 Leaderboard';
+    };
+    const resetTopBtnTextToQuestions = () => {
+        if (flipToLeaderboardBtnTop) flipToLeaderboardBtnTop.innerHTML = '&larr; Ask Question';
+    };
+
     document.getElementById('flipToLeaderboardBtn1')?.addEventListener('click', () => {
         flipCard?.classList.add('is-flipped');
+        resetTopBtnTextToQuestions();
     });
     document.getElementById('flipToLeaderboardBtn2')?.addEventListener('click', () => {
         flipCard?.classList.add('is-flipped');
+        resetTopBtnTextToQuestions();
     });
     document.getElementById('flipToFrontBtn')?.addEventListener('click', () => {
         flipCard?.classList.remove('is-flipped');
+        resetTopBtnTextToLeaderboard();
     });
 
     // --- Leaderboard Listener (Aggregating from 'questions') ---
@@ -219,6 +247,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const interactiveArea = document.getElementById('interactiveArea');
                 if (interactiveArea) interactiveArea.style.display = 'block';
                 
+                const topLeaderboardBtn = document.getElementById('flipToLeaderboardBtnTop');
+                if (topLeaderboardBtn) topLeaderboardBtn.style.display = 'block';
+                
                 formContainer.style.display = 'flex';
                 
                 userProfile.style.display = 'flex';
@@ -241,6 +272,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const interactiveArea = document.getElementById('interactiveArea');
                 if (interactiveArea) interactiveArea.style.display = 'none';
+                
+                const topLeaderboardBtn = document.getElementById('flipToLeaderboardBtnTop');
+                if (topLeaderboardBtn) topLeaderboardBtn.style.display = 'none';
                 
                 formContainer.style.display = 'none';
                 userProfile.style.display = 'none';

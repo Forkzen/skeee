@@ -228,10 +228,16 @@ body {
 }
 
 /* Theme Toggle Button */
-.theme-toggle-btn {
+.top-right-actions {
   position: absolute;
   top: 1.5rem;
   right: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 100;
+}
+
+.theme-toggle-btn, .nav-pill-btn {
   padding: 0.5rem 1.25rem;
   font-family: var(--font-family);
   font-size: 0.875rem;
@@ -241,13 +247,11 @@ body {
   background: var(--md-sys-color-surface);
   color: var(--md-sys-color-on-surface);
   cursor: pointer;
-  z-index: 100;
   transition: all 0.4s ease;
 }
-.theme-toggle-btn:hover {
+.theme-toggle-btn:hover, .nav-pill-btn:hover {
   background: var(--md-sys-color-surface-variant);
 }
-
 .form-textarea {
   resize: vertical;
   min-height: 120px;
@@ -983,7 +987,7 @@ body {
     display: flex;
     justify-content: center !important;
   }
-  .theme-toggle-btn {
+  .top-right-actions {
     position: absolute;
     top: 1.5rem;
     right: 1.5rem;
