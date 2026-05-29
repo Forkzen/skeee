@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // 2. Typewriter Placeholder Effect
-        const prompts = [
+        const defaultPrompts = [
             "What's the best way to start Web Dev?",
             "Any tips for the upcoming hackathon?",
             "What's your favorite coding snack?",
@@ -186,19 +186,38 @@ document.addEventListener('DOMContentLoaded', () => {
             "How do I center a div? 😭",
             "Tabs or spaces? Let's settle this."
         ];
+        
+        const personalPrompts = [
+            "What are your hobbies?",
+            "Do you have a partner? 👀",
+            "I like your...",
+            "What's your biggest flex?",
+            "Tell me a secret...",
+            "What's your favorite movie?"
+        ];
+        
+        let activePrompts = defaultPrompts;
         let promptIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
         let typeDelay = 100;
+        let typeTimeout;
 
         function typeWriter() {
             if (document.activeElement === questionInput && questionInput.value.length > 0) {
                 // Pause effect if user is actively typing
-                setTimeout(typeWriter, 1000);
+                typeTimeout = setTimeout(typeWriter, 1000);
                 return;
             }
 
-            const currentPrompt = prompts[promptIndex];
+            const currentPrompt = activePrompts[promptIndex];
+
+            // Safety check in case we switched arrays and promptIndex is out of bounds
+            if (!currentPrompt) {
+                promptIndex = 0;
+                typeTimeout = setTimeout(typeWriter, 100);
+                return;
+            }
 
             if (isDeleting) {
                 questionInput.setAttribute('placeholder', currentPrompt.substring(0, charIndex - 1));
@@ -215,15 +234,60 @@ document.addEventListener('DOMContentLoaded', () => {
                 isDeleting = true;
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
-                promptIndex = (promptIndex + 1) % prompts.length;
+                promptIndex = (promptIndex + 1) % activePrompts.length;
                 typeDelay = 500; // Pause before typing next prompt
             }
 
-            setTimeout(typeWriter, typeDelay);
+            typeTimeout = setTimeout(typeWriter, typeDelay);
         }
 
         // Start typing effect slightly after load
-        setTimeout(typeWriter, 1500);
+        typeTimeout = setTimeout(typeWriter, 1500);
+
+        // 3. Ask Personal Mode
+        const askPersonalBtn = document.getElementById('askPersonalBtn');
+        const personalModeOptions = document.getElementById('personalModeOptions');
+        const targetMemberName = document.getElementById('targetMemberName');
+        const formContainerEl = document.getElementById('formContainer');
+        const radioInputs = document.querySelectorAll('input[name="targetPerson"]');
+        
+        // Expose globally for the form submit handler
+        window.isPersonalMode = false;
+
+        if (askPersonalBtn) {
+            askPersonalBtn.addEventListener('click', () => {
+                window.isPersonalMode = !window.isPersonalMode;
+                if (window.isPersonalMode) {
+                    formContainerEl.classList.add('gemini-glow', 'active');
+                    askPersonalBtn.innerHTML = 'Normal Mode ☀️';
+                    personalModeOptions.style.display = 'flex';
+                    activePrompts = personalPrompts;
+                } else {
+                    formContainerEl.classList.remove('gemini-glow', 'active');
+                    askPersonalBtn.innerHTML = 'Ask personal 🌚';
+                    personalModeOptions.style.display = 'none';
+                    activePrompts = defaultPrompts;
+                }
+                
+                // Fast-forward deletion to switch cleanly
+                isDeleting = true;
+                clearTimeout(typeTimeout);
+                typeWriter();
+            });
+        }
+
+        radioInputs.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'member') {
+                    targetMemberName.style.display = 'block';
+                    targetMemberName.required = true;
+                } else {
+                    targetMemberName.style.display = 'none';
+                    targetMemberName.required = false;
+                    targetMemberName.value = '';
+                }
+            });
+        });
     }
 
     // Auth UI elements
@@ -330,11 +394,24 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             if (!db) throw new Error("Firebase DB not initialized.");
 
+            let targetType = 'general';
+            let targetName = '';
+            
+            if (window.isPersonalMode) {
+                targetType = document.querySelector('input[name="targetPerson"]:checked')?.value || 'lead';
+                if (targetType === 'member') {
+                    targetName = document.getElementById('targetMemberName').value.trim();
+                }
+            }
+
             await addDoc(collection(db, "questions"), {
                 author: authorName,
                 uid: uid,
                 text: questionText,
                 status: 'pending',
+                isPersonal: window.isPersonalMode || false,
+                targetType: targetType,
+                targetName: targetName,
                 timestamp: serverTimestamp()
             });
 
