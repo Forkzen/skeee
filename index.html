@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>GDG on Campus - Q&A</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -76,6 +79,7 @@
 
     <!-- Top Right Actions -->
     <div class="top-right-actions">
+        <a href="answered.html" id="viewAnsweredBtnTop" class="theme-toggle-btn" style="text-decoration: none;">Answered</a>
         <button id="flipToLeaderboardBtnTop" class="theme-toggle-btn" style="display: none;">Leaderboard</button>
         <button id="themeToggleBtn" class="theme-toggle-btn">Dark</button>
     </div>
@@ -311,8 +315,7 @@
 
     <!-- Toast Notifications -->
     <div id="toastContainer" class="toast-container"></div>
-
-    <script type="module" src="app.js"></script>
+    <script type="module" src="app.js?v=2"></script>
 </body>
 
 </html>

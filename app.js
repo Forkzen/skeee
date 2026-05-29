@@ -312,7 +312,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (interactiveArea) interactiveArea.style.display = 'block';
 
                 const topLeaderboardBtn = document.getElementById('flipToLeaderboardBtnTop');
-                if (topLeaderboardBtn) topLeaderboardBtn.style.display = 'block';
+                if (topLeaderboardBtn) topLeaderboardBtn.style.display = 'inline-block';
+                const ansBtnTop = document.getElementById('viewAnsweredBtnTop');
+                if (ansBtnTop) ansBtnTop.style.display = 'inline-flex';
 
                 formContainer.style.display = 'flex';
 
@@ -339,7 +341,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const topLeaderboardBtn = document.getElementById('flipToLeaderboardBtnTop');
                 if (topLeaderboardBtn) topLeaderboardBtn.style.display = 'none';
-
+                const ansBtnTop = document.getElementById('viewAnsweredBtnTop');
+                if (ansBtnTop) ansBtnTop.style.display = 'none';
                 formContainer.style.display = 'none';
                 userProfile.style.display = 'none';
                 userNameText.textContent = '';
