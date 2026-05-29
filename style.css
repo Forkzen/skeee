@@ -1078,26 +1078,39 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-.gemini-glow {
-  position: relative;
+.gemini-glow.active {
+  background: transparent !important;
+  overflow: visible !important;
   z-index: 1;
 }
 
 .gemini-glow::before {
   content: "";
   position: absolute;
-  inset: -3px;
+  inset: -6px;
   border-radius: var(--shape-large);
   background: linear-gradient(90deg, #4285F4, #EA4335, #FBBC05, #34A853, #4285F4);
   background-size: 200% 200%;
-  animation: geminiGlow 3s ease infinite;
-  z-index: -1;
-  filter: blur(8px);
+  animation: geminiGlow 3s linear infinite;
+  z-index: -2;
+  filter: blur(12px);
   opacity: 0;
   transition: opacity 0.5s ease;
 }
 
-.gemini-glow.active::before {
+.gemini-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--shape-large);
+  background: var(--md-sys-color-surface);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.gemini-glow.active::before,
+.gemini-glow.active::after {
   opacity: 1;
 }
 
