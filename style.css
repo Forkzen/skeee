@@ -877,8 +877,10 @@ body {
     justify-content: center !important;
   }
   .theme-toggle-btn {
-    position: static;
-    margin-bottom: 1rem;
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    margin-bottom: 0;
   }
   .app-header {
     padding: 1rem;
