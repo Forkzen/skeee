@@ -123,6 +123,7 @@
             <div class="tabs">
                 <button class="tab-btn active" data-target="pendingView">Pending Questions</button>
                 <button class="tab-btn" data-target="answeredView">Answered</button>
+                <button class="tab-btn" data-target="analyticsView">Feedback Analytics</button>
             </div>
 
             <!-- Pending Questions View -->
@@ -147,6 +148,62 @@
                             <path d="M12 8v4l3 3"></path>
                         </svg>
                         <p>Loading answered questions...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Analytics View -->
+            <div id="analyticsView" class="view-section animate-slide-up" style="display: none;">
+                <div class="analytics-dashboard">
+                    <div class="analytics-summary card" style="margin-bottom: 2rem;">
+                        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">Total Feedback Responses</h3>
+                        <div id="totalResponses" style="font-size: 3rem; font-weight: 700; color: var(--google-blue);">0</div>
+                    </div>
+
+                    <div class="analytics-grid">
+                        <!-- Workshops Metric -->
+                        <div class="metric-card card">
+                            <div class="metric-header">
+                                <span>Workshops & Events 🎤</span>
+                                <span id="avgWorkshops" class="metric-value">0.0 / 5</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div id="barWorkshops" class="progress-bar-fill" style="width: 0%; background: var(--google-red);"></div>
+                            </div>
+                        </div>
+
+                        <!-- Speakers Metric -->
+                        <div class="metric-card card">
+                            <div class="metric-header">
+                                <span>Speaker Quality 🗣️</span>
+                                <span id="avgSpeakers" class="metric-value">0.0 / 5</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div id="barSpeakers" class="progress-bar-fill" style="width: 0%; background: #F29900;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Swags Metric -->
+                        <div class="metric-card card">
+                            <div class="metric-header">
+                                <span>Free Swags & Goodies 🎁</span>
+                                <span id="avgSwags" class="metric-value">0.0 / 5</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div id="barSwags" class="progress-bar-fill" style="width: 0%; background: var(--google-green);"></div>
+                            </div>
+                        </div>
+
+                        <!-- Overall Metric -->
+                        <div class="metric-card card">
+                            <div class="metric-header">
+                                <span>Overall Vibe ✨</span>
+                                <span id="avgOverall" class="metric-value">0.0 / 5</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div id="barOverall" class="progress-bar-fill" style="width: 0%; background: var(--google-blue);"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -126,11 +126,20 @@ document.addEventListener('DOMContentLoaded', () => {
             
             let pendingCount = 0;
             let answeredCount = 0;
+            
+            let totalRatings = 0;
+            let sums = { workshops: 0, speakers: 0, swags: 0, overall: 0 };
 
             snapshot.forEach((docSnapshot) => {
                 const question = { id: docSnapshot.id, ...docSnapshot.data() };
                 
-                if (question.status === 'pending') {
+                if (question.type === 'rating') {
+                    totalRatings++;
+                    sums.workshops += question.ratings?.workshops || 0;
+                    sums.speakers += question.ratings?.speakers || 0;
+                    sums.swags += question.ratings?.swags || 0;
+                    sums.overall += question.ratings?.overall || 0;
+                } else if (question.status === 'pending') {
                     pendingList.appendChild(createPendingCard(question));
                     pendingCount++;
                 } else if (question.status === 'answered') {
@@ -138,6 +147,35 @@ document.addEventListener('DOMContentLoaded', () => {
                     answeredCount++;
                 }
             });
+
+            // Update Analytics UI
+            document.getElementById('totalResponses').textContent = totalRatings;
+            
+            if (totalRatings > 0) {
+                const avgWorkshops = (sums.workshops / totalRatings).toFixed(1);
+                const avgSpeakers = (sums.speakers / totalRatings).toFixed(1);
+                const avgSwags = (sums.swags / totalRatings).toFixed(1);
+                const avgOverall = (sums.overall / totalRatings).toFixed(1);
+
+                document.getElementById('avgWorkshops').textContent = `${avgWorkshops} / 5`;
+                document.getElementById('barWorkshops').style.width = `${(avgWorkshops / 5) * 100}%`;
+
+                document.getElementById('avgSpeakers').textContent = `${avgSpeakers} / 5`;
+                document.getElementById('barSpeakers').style.width = `${(avgSpeakers / 5) * 100}%`;
+
+                document.getElementById('avgSwags').textContent = `${avgSwags} / 5`;
+                document.getElementById('barSwags').style.width = `${(avgSwags / 5) * 100}%`;
+
+                document.getElementById('avgOverall').textContent = `${avgOverall} / 5`;
+                document.getElementById('barOverall').style.width = `${(avgOverall / 5) * 100}%`;
+            } else {
+                ['Workshops', 'Speakers', 'Swags', 'Overall'].forEach(cat => {
+                    const elAvg = document.getElementById(`avg${cat}`);
+                    const elBar = document.getElementById(`bar${cat}`);
+                    if(elAvg) elAvg.textContent = '0.0 / 5';
+                    if(elBar) elBar.style.width = '0%';
+                });
+            }
 
             if (pendingCount === 0) {
                 pendingList.innerHTML = `
