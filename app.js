@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.isPersonalMode = !window.isPersonalMode;
                 if (window.isPersonalMode) {
                     formContainerEl.classList.add('gemini-glow', 'active');
-                    askPersonalBtn.innerHTML = 'Normal Mode ☀️';
+                    askPersonalBtn.innerHTML = 'Normal Mode';
                     personalModeOptions.style.display = 'flex';
                     activePrompts = personalPrompts;
                 } else {
