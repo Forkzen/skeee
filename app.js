@@ -1,5 +1,5 @@
 import { db, auth } from './firebase-config.js';
-import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { collection, addDoc, serverTimestamp, doc, setDoc, increment, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
 // --- Theme Toggle Logic ---
@@ -40,11 +40,75 @@ if (splashScreen) {
     }
 }
 
+// --- Ranking Logic ---
+function getRankInfo(count) {
+    if (count <= 1) return { name: 'Rookie', class: 'rank-rookie', emoji: '🔰' };
+    if (count <= 3) return { name: 'Bronze', class: 'rank-bronze', emoji: '🥉' };
+    if (count <= 6) return { name: 'Silver', class: 'rank-silver', emoji: '🥈' };
+    if (count <= 10) return { name: 'Gold', class: 'rank-gold', emoji: '🥇' };
+    if (count <= 15) return { name: 'Platinum', class: 'rank-platinum', emoji: '💠' };
+    if (count <= 20) return { name: 'Diamond', class: 'rank-diamond', emoji: '💎' };
+    if (count <= 29) return { name: 'Master', class: 'rank-master', emoji: '🔥' };
+    if (count <= 45) return { name: 'Crimson', class: 'rank-crimson', emoji: '🩸' };
+    if (count <= 74) return { name: 'Iridescent', class: 'rank-iridescent', emoji: '🌈' };
+    return { name: 'Top 250', class: 'rank-top250', emoji: '👑' };
+}
+
+async function updateUserScore(user) {
+    if (!user) return;
+    try {
+        const userRef = doc(db, 'users', user.uid);
+        await setDoc(userRef, {
+            displayName: user.displayName || 'Anonymous User',
+            submissionCount: increment(1)
+        }, { merge: true });
+    } catch (e) {
+        console.error("Error updating score:", e);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('questionForm');
     const submitBtn = document.getElementById('submitBtn');
     const questionInput = document.getElementById('questionText');
     const authorNameInput = document.getElementById('authorName');
+
+    // --- Leaderboard Listener ---
+    const leaderboardList = document.getElementById('leaderboardList');
+    if (leaderboardList && db) {
+        const q = query(collection(db, 'users'), orderBy('submissionCount', 'desc'), limit(10));
+        onSnapshot(q, (snapshot) => {
+            leaderboardList.innerHTML = '';
+            if (snapshot.empty) {
+                leaderboardList.innerHTML = '<div class="empty-state" style="padding: 2rem 1rem;"><p>No contributors yet. Be the first!</p></div>';
+                return;
+            }
+            let pos = 1;
+            snapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const count = data.submissionCount || 0;
+                const rank = getRankInfo(count);
+                
+                const item = document.createElement('div');
+                item.className = 'leaderboard-item';
+                item.innerHTML = `
+                    <div class="leaderboard-user">
+                        <span class="leaderboard-pos">#${pos}</span>
+                        <div>
+                            <div class="leaderboard-name">${data.displayName || 'Anonymous User'}</div>
+                            <span class="rank-badge ${rank.class}" style="font-size: 0.65rem; padding: 0.1rem 0.3rem; margin-top: 2px;">${rank.emoji} ${rank.name}</span>
+                        </div>
+                    </div>
+                    <div class="leaderboard-score">${count}</div>
+                `;
+                leaderboardList.appendChild(item);
+                pos++;
+            });
+        }, (error) => {
+            console.error("Leaderboard error:", error);
+            leaderboardList.innerHTML = '<div class="empty-state"><p>Could not load leaderboard.</p></div>';
+        });
+    }
 
     // --- Interactive Q&A Input Features ---
 
@@ -115,6 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentUser = null;
 
     // Listen for Auth State Changes
+    let userUnsubscribe = null;
     if (auth) {
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -125,8 +190,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 userNameText.textContent = user.displayName;
                 authorNameInput.value = user.displayName; // Pre-fill name
                 authorNameInput.disabled = true; // Lock it to their authenticated name
+
+                // Listen to user score for badge
+                if (userUnsubscribe) userUnsubscribe();
+                userUnsubscribe = onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
+                    const badge = document.getElementById('userRankBadge');
+                    if (badge) {
+                        const count = docSnap.exists() ? (docSnap.data().submissionCount || 0) : 0;
+                        const rank = getRankInfo(count);
+                        badge.textContent = `${rank.emoji} ${rank.name}`;
+                        badge.className = `rank-badge ${rank.class}`;
+                        badge.style.display = 'inline-block';
+                    }
+                });
             } else {
                 currentUser = null;
+                if (userUnsubscribe) { userUnsubscribe(); userUnsubscribe = null; }
                 authContainer.style.display = 'block';
                 formContainer.style.display = 'none';
                 userProfile.style.display = 'none';
@@ -189,6 +268,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 status: 'pending',
                 timestamp: serverTimestamp()
             });
+
+            // Update user submission score
+            await updateUserScore(currentUser);
 
             // Trigger Rocket Animation
             const rocket = document.getElementById('rocketIcon');
@@ -370,6 +452,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 ratings: currentRatings,
                 timestamp: serverTimestamp()
             });
+            
+            // Update user submission score
+            await updateUserScore(user);
             
             ratingSection.style.display = 'none';
             thankYouMessage.style.display = 'block';

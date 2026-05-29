@@ -95,7 +95,10 @@
             <!-- Right Profile Area -->
             <div style="display: flex; justify-content: flex-end;">
                 <div id="userProfile" style="display: none; align-items: center; gap: 10px;">
-                    <span id="userNameText" style="font-weight: 500;"></span>
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                        <span id="userNameText" style="font-weight: 500; line-height: 1;"></span>
+                        <div id="userRankBadge" class="rank-badge" style="display: none;"></div>
+                    </div>
                     <button id="signOutBtn" class="btn btn-outline" style="padding: 0.5rem 1rem;">Sign Out</button>
                 </div>
             </div>
@@ -245,6 +248,18 @@
 
                 <button id="playAgainBtn" class="btn btn-outline btn-pill" style="margin-top: 2rem;">Ask Another
                     Question</button>
+            </div>
+        </div>
+
+        <!-- Leaderboard Container -->
+        <div id="leaderboardContainer" class="card animate-slide-up" style="margin-top: 2rem;">
+            <div class="card-content">
+                <h2 class="card-title" style="margin-bottom: 1.5rem;">Top Contributors 🏆</h2>
+                <div id="leaderboardList" class="leaderboard-list">
+                    <div class="empty-state" style="padding: 2rem 1rem;">
+                        <p>Loading leaderboard...</p>
+                    </div>
+                </div>
             </div>
         </div>
 
