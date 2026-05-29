@@ -875,7 +875,10 @@ body {
 .leaderboard-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 0.5rem; /* for scrollbar */
 }
 
 .leaderboard-item {
@@ -940,6 +943,7 @@ body {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   width: 100%;
+  align-self: start;
 }
 
 .flip-card-back {
