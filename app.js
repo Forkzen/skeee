@@ -296,8 +296,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const recs = recommendations[mood];
             const randomRec = recs[Math.floor(Math.random() * recs.length)];
 
+            let actionText = "checking out";
+            if (randomRec.type === "Song") {
+                actionText = "listening to";
+            } else if (randomRec.type === "Movie" || randomRec.type === "Series") {
+                actionText = "watching";
+            }
+
             // Update Card UI
             recCard.innerHTML = `
+                <div style="font-size: 0.95rem; color: var(--md-sys-color-on-surface-variant); margin-bottom: 0.75rem;">
+                    You should try ${actionText}...
+                </div>
                 <span class="rec-type">${randomRec.type}</span>
                 <div class="rec-title">${randomRec.title}</div>
                 <div class="rec-artist">${randomRec.artist}</div>
