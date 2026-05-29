@@ -62,6 +62,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const questionInput = document.getElementById('questionText');
     const authorNameInput = document.getElementById('authorName');
 
+    // --- Flip Card Listeners ---
+    const flipCard = document.getElementById('flipCard');
+    document.getElementById('flipToLeaderboardBtn1')?.addEventListener('click', () => {
+        flipCard?.classList.add('is-flipped');
+    });
+    document.getElementById('flipToLeaderboardBtn2')?.addEventListener('click', () => {
+        flipCard?.classList.add('is-flipped');
+    });
+    document.getElementById('flipToFrontBtn')?.addEventListener('click', () => {
+        flipCard?.classList.remove('is-flipped');
+    });
+
     // --- Leaderboard Listener (Aggregating from 'questions') ---
     const leaderboardList = document.getElementById('leaderboardList');
     if (leaderboardList && db) {
@@ -203,14 +215,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (user) {
                 currentUser = user;
                 authContainer.style.display = 'none';
-                formContainer.style.display = 'block';
+                
+                const interactiveArea = document.getElementById('interactiveArea');
+                if (interactiveArea) interactiveArea.style.display = 'block';
+                
+                formContainer.style.display = 'flex';
+                
                 userProfile.style.display = 'flex';
                 userNameText.textContent = user.displayName;
                 authorNameInput.value = user.displayName; // Pre-fill name
                 authorNameInput.disabled = true; // Lock it to their authenticated name
-                
-                const leaderboardContainer = document.getElementById('leaderboardContainer');
-                if (leaderboardContainer) leaderboardContainer.style.display = 'block';
 
                 // Listen to user score for badge (Now handled inside leaderboard listener)
                 const badge = document.getElementById('userRankBadge');
@@ -224,14 +238,15 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 currentUser = null;
                 authContainer.style.display = 'block';
+                
+                const interactiveArea = document.getElementById('interactiveArea');
+                if (interactiveArea) interactiveArea.style.display = 'none';
+                
                 formContainer.style.display = 'none';
                 userProfile.style.display = 'none';
                 userNameText.textContent = '';
                 authorNameInput.value = '';
                 authorNameInput.disabled = false;
-                
-                const leaderboardContainer = document.getElementById('leaderboardContainer');
-                if (leaderboardContainer) leaderboardContainer.style.display = 'none';
             }
         });
     }

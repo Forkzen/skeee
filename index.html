@@ -140,126 +140,146 @@
             </button>
         </div>
 
-        <div id="formContainer" class="card animate-slide-up" style="display: none;">
-            <div class="card-content">
-                <h2 class="card-title">What you feelin?</h2>
-
-                <form id="questionForm">
-                    <div class="form-group">
-                        <label for="authorName" class="form-label">Your Name</label>
-                        <input type="text" id="authorName" class="form-input" disabled>
+        <!-- Flip Wrapper for Interactive Area -->
+        <div id="interactiveArea" class="flip-wrapper" style="display: none;">
+            <div id="flipCard" class="flip-card">
+                
+                <!-- FRONT FACE -->
+                <div class="flip-card-front">
+                    <!-- Form Container -->
+                    <div id="formContainer" class="card animate-slide-up" style="margin-top: 0; display: flex; flex-direction: column; height: 100%;">
+                        <div class="card-content">
+                            <h2 class="card-title">What you feelin?</h2>
+            
+                            <form id="questionForm">
+                                <div class="form-group">
+                                    <label for="authorName" class="form-label">Your Name</label>
+                                    <input type="text" id="authorName" class="form-input" disabled>
+                                </div>
+            
+                                <div class="form-group speech-bubble-container" style="position: relative;">
+                                    <textarea id="questionText" class="form-textarea speech-bubble" placeholder=""
+                                        required></textarea>
+                                    <!-- Rocket Image for Send Animation -->
+                                    <img src="assets/rocket.png" id="rocketIcon" alt="Rocket"
+                                        style="display: none; position: absolute; width: 60px; height: 60px; z-index: 10;">
+                                </div>
+                            </form>
+                        </div>
+                        <button type="submit" form="questionForm" class="btn btn-primary" id="submitBtn" style="border-radius: 0; padding: 1rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span>Submit Question</span>
+                            <span style="font-size: 1.5rem; line-height: 1;">&rarr;</span>
+                        </button>
+                        <button type="button" class="btn flip-btn" id="flipToLeaderboardBtn1" style="background: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant); border-radius: 0 0 var(--shape-large) var(--shape-large); padding: 1rem; width: 100%; font-weight: 600;">
+                            View Leaderboard 🏆
+                        </button>
                     </div>
 
-                    <div class="form-group speech-bubble-container" style="position: relative;">
-                        <textarea id="questionText" class="form-textarea speech-bubble" placeholder=""
-                            required></textarea>
-                        <!-- Rocket Image for Send Animation -->
-                        <img src="assets/rocket.png" id="rocketIcon" alt="Rocket"
-                            style="display: none; position: absolute; width: 60px; height: 60px; z-index: 10;">
-                    </div>
-                </form>
-            </div>
-            <button type="submit" form="questionForm" class="btn btn-primary card-bottom-btn" id="submitBtn">
-                <span>Submit Question</span>
-                <span style="font-size: 1.5rem;">&rarr;</span>
-            </button>
-        </div>
-
-        <!-- Mood Game Container (Hidden initially) -->
-        <div id="moodGameContainer" class="card animate-slide-up"
-            style="display: none; text-align: center; overflow: hidden; position: relative; min-height: 350px;">
-            <div id="moodGameUI" class="card-content"
-                style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
-                <h2 class="card-title">Question sent! 🚀</h2>
-                <p style="color: var(--md-sys-color-on-surface-variant); margin-bottom: 2rem;">Catch a floating bubble
-                    that matches your mood to get a personalized recommendation!</p>
-
-                <div class="mood-orbs-container" id="moodOrbsContainer">
-                    <button class="mood-orb sad" data-mood="sad">🌧️</button>
-                    <button class="mood-orb chill" data-mood="chill">😌</button>
-                    <button class="mood-orb energetic" data-mood="energetic">⚡️</button>
-                    <button class="mood-orb focused" data-mood="focused">🎧</button>
-                </div>
-            </div>
-
-            <div id="recommendationUI" class="card-content"
-                style="display: none; height: 100%; flex-direction: column; justify-content: center; align-items: center;">
-                <h2 class="card-title">Your Vibe Match</h2>
-                <div id="recCard" class="rec-card" style="margin-top: 1.5rem;">
-                    <!-- Data injected via JS -->
-                </div>
-
-                <!-- Interactive Rating UI -->
-                <div id="ratingSection" class="rating-section animate-slide-up" style="margin-top: 2.5rem; width: 100%; display: flex; flex-direction: column; gap: 1.5rem;">
-                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--md-sys-color-on-surface); text-align: left; margin-bottom: 0.5rem;">Rate your GDG Experience! 🌟</h3>
-                    
-                    <div class="rating-row" data-category="workshops">
-                        <div class="rating-label">Workshops & Events 🎤</div>
-                        <div class="rating-options">
-                            <button class="rating-emoji" data-val="1">1</button>
-                            <button class="rating-emoji" data-val="2">2</button>
-                            <button class="rating-emoji" data-val="3">3</button>
-                            <button class="rating-emoji" data-val="4">4</button>
-                            <button class="rating-emoji" data-val="5">5</button>
+                    <!-- Mood Game Container (Hidden initially) -->
+                    <div id="moodGameContainer" class="card animate-slide-up"
+                        style="display: none; text-align: center; overflow: hidden; position: relative; min-height: 350px; margin-top: 0;">
+                        <div id="moodGameUI" class="card-content"
+                            style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                            <h2 class="card-title">Question sent! 🚀</h2>
+                            <p style="color: var(--md-sys-color-on-surface-variant); margin-bottom: 2rem;">Catch a floating bubble
+                                that matches your mood to get a personalized recommendation!</p>
+            
+                            <div class="mood-orbs-container" id="moodOrbsContainer">
+                                <button class="mood-orb sad" data-mood="sad">🌧️</button>
+                                <button class="mood-orb chill" data-mood="chill">😌</button>
+                                <button class="mood-orb energetic" data-mood="energetic">⚡️</button>
+                                <button class="mood-orb focused" data-mood="focused">🎧</button>
+                            </div>
+                        </div>
+            
+                        <div id="recommendationUI" class="card-content"
+                            style="display: none; height: 100%; flex-direction: column; justify-content: center; align-items: center;">
+                            <h2 class="card-title">Your Vibe Match</h2>
+                            <div id="recCard" class="rec-card" style="margin-top: 1.5rem;">
+                                <!-- Data injected via JS -->
+                            </div>
+            
+                            <!-- Interactive Rating UI -->
+                            <div id="ratingSection" class="rating-section animate-slide-up" style="margin-top: 2.5rem; width: 100%; display: flex; flex-direction: column; gap: 1.5rem;">
+                                <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--md-sys-color-on-surface); text-align: left; margin-bottom: 0.5rem;">Rate your GDG Experience! 🌟</h3>
+                                
+                                <div class="rating-row" data-category="workshops">
+                                    <div class="rating-label">Workshops & Events 🎤</div>
+                                    <div class="rating-options">
+                                        <button class="rating-emoji" data-val="1">1</button>
+                                        <button class="rating-emoji" data-val="2">2</button>
+                                        <button class="rating-emoji" data-val="3">3</button>
+                                        <button class="rating-emoji" data-val="4">4</button>
+                                        <button class="rating-emoji" data-val="5">5</button>
+                                    </div>
+                                </div>
+            
+                                <div class="rating-row" data-category="speakers">
+                                    <div class="rating-label">Speaker Quality 🗣️</div>
+                                    <div class="rating-options">
+                                        <button class="rating-emoji" data-val="1">1</button>
+                                        <button class="rating-emoji" data-val="2">2</button>
+                                        <button class="rating-emoji" data-val="3">3</button>
+                                        <button class="rating-emoji" data-val="4">4</button>
+                                        <button class="rating-emoji" data-val="5">5</button>
+                                    </div>
+                                </div>
+            
+                                <div class="rating-row" data-category="swags">
+                                    <div class="rating-label">Free Swags & Goodies 🎁</div>
+                                    <div class="rating-options">
+                                        <button class="rating-emoji" data-val="1">1</button>
+                                        <button class="rating-emoji" data-val="2">2</button>
+                                        <button class="rating-emoji" data-val="3">3</button>
+                                        <button class="rating-emoji" data-val="4">4</button>
+                                        <button class="rating-emoji" data-val="5">5</button>
+                                    </div>
+                                </div>
+            
+                                <div class="rating-row" data-category="overall">
+                                    <div class="rating-label">Overall Vibe ✨</div>
+                                    <div class="rating-options">
+                                        <button class="rating-emoji" data-val="1">1</button>
+                                        <button class="rating-emoji" data-val="2">2</button>
+                                        <button class="rating-emoji" data-val="3">3</button>
+                                        <button class="rating-emoji" data-val="4">4</button>
+                                        <button class="rating-emoji" data-val="5">5</button>
+                                    </div>
+                                </div>
+            
+                                <button id="submitRatingBtn" class="btn btn-primary btn-pill" style="margin-top: 1rem; align-self: center;" disabled>
+                                    Submit Rating &rarr;
+                                </button>
+                            </div>
+            
+                            <div id="thankYouMessage" class="animate-slide-up" style="display: none; margin-top: 2.5rem; text-align: center; color: var(--google-green); font-weight: 600; font-size: 1.25rem;">
+                                Thanks for your feedback! 💖
+                            </div>
+            
+                            <button id="playAgainBtn" class="btn btn-outline btn-pill" style="margin-top: 2rem; width: 100%;">Ask Another Question</button>
+                            <button type="button" id="flipToLeaderboardBtn2" class="btn flip-btn" style="background: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant); padding: 1rem; width: 100%; font-weight: 600; margin-top: 1rem; border-radius: var(--shape-medium);">View Leaderboard 🏆</button>
                         </div>
                     </div>
-
-                    <div class="rating-row" data-category="speakers">
-                        <div class="rating-label">Speaker Quality 🗣️</div>
-                        <div class="rating-options">
-                            <button class="rating-emoji" data-val="1">1</button>
-                            <button class="rating-emoji" data-val="2">2</button>
-                            <button class="rating-emoji" data-val="3">3</button>
-                            <button class="rating-emoji" data-val="4">4</button>
-                            <button class="rating-emoji" data-val="5">5</button>
-                        </div>
-                    </div>
-
-                    <div class="rating-row" data-category="swags">
-                        <div class="rating-label">Free Swags & Goodies 🎁</div>
-                        <div class="rating-options">
-                            <button class="rating-emoji" data-val="1">1</button>
-                            <button class="rating-emoji" data-val="2">2</button>
-                            <button class="rating-emoji" data-val="3">3</button>
-                            <button class="rating-emoji" data-val="4">4</button>
-                            <button class="rating-emoji" data-val="5">5</button>
-                        </div>
-                    </div>
-
-                    <div class="rating-row" data-category="overall">
-                        <div class="rating-label">Overall Vibe ✨</div>
-                        <div class="rating-options">
-                            <button class="rating-emoji" data-val="1">1</button>
-                            <button class="rating-emoji" data-val="2">2</button>
-                            <button class="rating-emoji" data-val="3">3</button>
-                            <button class="rating-emoji" data-val="4">4</button>
-                            <button class="rating-emoji" data-val="5">5</button>
-                        </div>
-                    </div>
-
-                    <button id="submitRatingBtn" class="btn btn-primary btn-pill" style="margin-top: 1rem; align-self: center;" disabled>
-                        Submit Rating &rarr;
-                    </button>
                 </div>
 
-                <div id="thankYouMessage" class="animate-slide-up" style="display: none; margin-top: 2.5rem; text-align: center; color: var(--google-green); font-weight: 600; font-size: 1.25rem;">
-                    Thanks for your feedback! 💖
-                </div>
-
-                <button id="playAgainBtn" class="btn btn-outline btn-pill" style="margin-top: 2rem;">Ask Another
-                    Question</button>
-            </div>
-        </div>
-
-        <!-- Leaderboard Container -->
-        <div id="leaderboardContainer" class="card animate-slide-up" style="margin-top: 2rem; display: none;">
-            <div class="card-content">
-                <h2 class="card-title" style="margin-bottom: 1.5rem;">Leaderboard 🏆</h2>
-                <div id="leaderboardList" class="leaderboard-list">
-                    <div class="empty-state" style="padding: 2rem 1rem;">
-                        <p>Loading leaderboard...</p>
+                <!-- BACK FACE -->
+                <div class="flip-card-back">
+                    <!-- Leaderboard Container -->
+                    <div id="leaderboardContainer" class="card animate-slide-up" style="margin-top: 0; height: 100%; display: flex; flex-direction: column;">
+                        <div class="card-content" style="flex: 1;">
+                            <h2 class="card-title" style="margin-bottom: 1.5rem;">Leaderboard 🏆</h2>
+                            <div id="leaderboardList" class="leaderboard-list">
+                                <div class="empty-state" style="padding: 2rem 1rem;">
+                                    <p>Loading leaderboard...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn flip-btn" id="flipToFrontBtn" style="background: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant); border-radius: 0 0 var(--shape-large) var(--shape-large); padding: 1rem; width: 100%; font-weight: 600;">
+                            &larr; Back to Questions
+                        </button>
                     </div>
                 </div>
+
             </div>
         </div>
 

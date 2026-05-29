@@ -917,6 +917,39 @@ body {
   font-size: 1.1rem;
 }
 
+/* Flip Card Animation */
+.flip-wrapper {
+  perspective: 1000px;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.flip-card {
+  display: grid;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  width: 100%;
+}
+
+.flip-card.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  width: 100%;
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front > .card, .flip-card-back > .card {
+  margin-top: 0 !important;
+}
+
 /* Feedback Analytics Dashboard */
 .analytics-dashboard {
   display: flex;
