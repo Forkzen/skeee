@@ -343,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Check if all 4 are rated
             if (Object.keys(currentRatings).length === 4) {
-                submitRatingBtn.style.display = 'inline-flex';
+                submitRatingBtn.disabled = false;
                 // Small animation for button
                 submitRatingBtn.style.animation = 'slideUp 0.3s ease-out forwards';
             }
@@ -388,8 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Reset Rating UI
         currentRatings = {};
         ratingEmojis.forEach(btn => btn.classList.remove('active', 'pop'));
-        submitRatingBtn.style.display = 'none';
-        submitRatingBtn.disabled = false;
+        submitRatingBtn.disabled = true;
         submitRatingBtn.innerHTML = 'Submit Rating &rarr;';
         ratingSection.style.display = 'flex';
         thankYouMessage.style.display = 'none';
